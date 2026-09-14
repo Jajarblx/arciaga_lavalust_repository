@@ -88,7 +88,7 @@ $config['date_default_timezone'] = 'Asia/Manila';
 | WARNING: You MUST set this value!
 |
 */
-$config['base_url'] 				= getenv('APP_URL') ?: '';
+$config['base_url'] 				= getenv('APP_URL') ?: (getenv('RENDER_EXTERNAL_URL') ?: '');
 
 /*
 |--------------------------------------------------------------------------

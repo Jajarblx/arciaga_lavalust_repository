@@ -13,7 +13,7 @@ An authenticated product CRUD application built with LavaLust 4.6.0 for Laborato
 
 ## Requirements
 
-- PHP 7.4 or newer with `pdo_mysql`
+- PHP 8.2 with `pdo_mysql` and `mbstring`
 - Apache with URL rewriting, or another compatible web server
 - MySQL or a managed MySQL service
 
@@ -22,8 +22,8 @@ An authenticated product CRUD application built with LavaLust 4.6.0 for Laborato
 Clone your repository and create a private environment file from the committed example:
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
-cd YOUR_REPOSITORY
+git clone https://github.com/Jajarblx/arciaga_lavalust_repository.git
+cd arciaga_lavalust_repository
 cp .env.example .env
 ```
 
@@ -75,6 +75,44 @@ php -l app/models/ProductModel.php
 
 The default XAMPP URL used by this checkout is
 `http://localhost/ArciagaLavalust/`.
+
+## Render deployment
+
+Create a Render Web Service from this repository and select the Docker
+runtime. The container uses the official PHP 8.2 Apache image, serves only the
+`public/` directory, enables `mod_rewrite`, and binds Apache to the port Render
+provides in `PORT`.
+
+No Render Build Command or Start Command is required because both are defined
+by the Dockerfile. Configure `/login` as the health check path.
+
+Set these environment variables in Render:
+
+```text
+APP_NAME=LavaLust Product Inventory
+APP_KEY=<generate-a-long-random-value>
+APP_ENV=production
+APP_URL=https://SERVICE-NAME.onrender.com
+DB_DRIVER=mysql
+DB_HOST=<aiven-host>
+DB_PORT=<aiven-port>
+DB_NAME=defaultdb
+DB_USER=avnadmin
+DB_PASSWORD=<aiven-password>
+DB_CHARSET=utf8mb4
+DB_PREFIX=
+DB_SSL_MODE=REQUIRED
+DB_SSL_CA=certs/ca.pem
+DB_SSL_VERIFY=true
+```
+
+Render supplies `PORT`; do not add a fixed port. The relative CA path resolves
+inside the container to `/var/www/html/certs/ca.pem`. The certificate is public
+and grants no database access by itself.
+
+`APP_URL` is recommended when you know the final URL or use a custom domain. If
+it is omitted, the application uses Render's automatically supplied
+`RENDER_EXTERNAL_URL`. A local `.env` value still takes precedence for XAMPP.
 
 ## Security
 

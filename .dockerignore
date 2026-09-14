@@ -1,0 +1,26 @@
+.git
+.github
+.gitignore
+.gitattributes
+
+# Never send local secrets or private key material to the Docker daemon.
+.env
+.env.*
+*.key
+*.p12
+*.pfx
+
+# Local/editor state and generated runtime data.
+.idea
+.vscode
+*.log
+*.cache
+runtime/*
+
+# Development and documentation files are not required by the running image.
+Dockerfile
+.dockerignore
+README.md
+CRUD_SETUP.md
+changelog.txt
+database/
