@@ -25,50 +25,36 @@ class Create_users_table {
                     'auto_increment' => TRUE,
                     'null'           => FALSE,
                 ],
-                'username' => [
+                'firstname' => [
+                    'type'       => 'VARCHAR',
+                    'constraint' => 100,
+                    'null'       => FALSE,
+                ],
+                'lastname' => [
                     'type'       => 'VARCHAR',
                     'constraint' => 100,
                     'null'       => FALSE,
                 ],
                 'email' => [
                     'type'       => 'VARCHAR',
-                    'constraint' => 255,
+                    'constraint' => 150,
                     'null'       => FALSE,
                     'unique'     => TRUE,
+                ],
+                'username' => [
+                    'type'       => 'VARCHAR',
+                    'constraint' => 100,
+                    'null'       => FALSE,
                 ],
                 'password' => [
                     'type'       => 'VARCHAR',
                     'constraint' => 255,
-                    'null'       => FALSE,
-                ],
-                'role' => [
-                    'type'       => 'ENUM',
-                    'constraint' => "'admin','moderator','user'",
-                    'null'       => FALSE,
-                    'default'    => 'user',
-                ],
-                'is_active' => [
-                    'type'       => 'TINYINT',
-                    'constraint' => 1,
-                    'unsigned'   => TRUE,
-                    'null'       => FALSE,
-                    'default'    => 1,
-                ],
-                'created_at' => [
-                    'type'    => 'DATETIME',
-                    'null'    => FALSE,
-                    'default' => 'CURRENT_TIMESTAMP',
-                ],
-                'updated_at' => [
-                    'type'    => 'DATETIME',
-                    'null'    => TRUE,
-                    'default' => NULL,
+                    'null'       => TRUE,
                 ],
             ])
             ->add_key('id', primary: TRUE)
             ->add_key('username', unique: TRUE, name: 'username_unique')
-            ->add_key('email', name: 'email_idx')
-            ->add_key('role', name: 'role_idx')
+            ->add_key('email', unique: TRUE, name: 'email_unique')
             ->create_table('users');
     }
 

@@ -3,7 +3,13 @@
 
 # Environment
 .env
+.env.*
 !.env.example
+
+# Private keys and certificate bundles
+*.key
+*.p12
+*.pfx
 
 # Dependencies
 vendor/

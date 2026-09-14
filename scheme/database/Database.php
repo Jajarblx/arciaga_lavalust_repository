@@ -242,6 +242,10 @@ class Database {
             ? $database_config['path']
             : null;
 
+        $ssl_mode = strtoupper(trim((string)($database_config['ssl_mode'] ?? 'DISABLED')));
+        $ssl_ca = trim((string)($database_config['ssl_ca'] ?? ''));
+        $ssl_verify = (bool)($database_config['ssl_verify'] ?? true);
+
         switch ($driver) {
             case 'mysql':
                 $dsn = "mysql:host=$host;dbname=$dbname_value;charset=$charset;port=$port";
@@ -267,6 +271,35 @@ class Database {
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES   => false,
         );
+
+        if ($driver === 'mysql' && $ssl_mode !== 'DISABLED') {
+            $valid_ssl_modes = ['REQUIRED', 'VERIFY_CA', 'VERIFY_IDENTITY'];
+
+            if (!in_array($ssl_mode, $valid_ssl_modes, true)) {
+                throw new PDOException("Unsupported MySQL SSL mode: {$ssl_mode}");
+            }
+
+            if (!defined('PDO::MYSQL_ATTR_SSL_CA') || !defined('PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT')) {
+                throw new PDOException('This PDO MySQL installation does not support the required SSL options.');
+            }
+
+            if ($ssl_ca === '') {
+                throw new PDOException('MySQL SSL is enabled but DB_SSL_CA is not configured.');
+            }
+
+            $is_absolute_path = preg_match('#^(?:[a-zA-Z]:[\\\\/]|/)#', $ssl_ca) === 1;
+            $ssl_ca_path = $is_absolute_path
+                ? $ssl_ca
+                : ROOT_DIR . ltrim($ssl_ca, '/\\');
+            $ssl_ca_path = realpath($ssl_ca_path);
+
+            if ($ssl_ca_path === false || !is_readable($ssl_ca_path)) {
+                throw new PDOException('The configured MySQL CA certificate is not readable.');
+            }
+
+            $options[PDO::MYSQL_ATTR_SSL_CA] = $ssl_ca_path;
+            $options[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = $ssl_verify;
+        }
 
         try {
             $this->db = new PDO($dsn, $username, $password, $options);
